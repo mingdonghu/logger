@@ -40,7 +40,7 @@ std::string GetCurrentTime() {
 
 void LoggerOutputToConsole(ulog_level_t severity, char *msg) {
   std::lock_guard<std::mutex> lg(mutex_lock1_);
-  printf("[ldrobot][%s][%s]:%s\n",
+  printf("[LD][%s][%s]:%s\n",
          GetCurrentTime().c_str(),
          ulog_level_name(severity),
          msg);
@@ -53,7 +53,7 @@ void LoggerOutputToFile(ulog_level_t severity, char *msg) {
     printf("open log file:%s is error,errno:%d\n", LDLIDAR_SDK_LOG_FILE_OUTPUT_PATH, errno);
     return;
   }
-  fprintf(fp, "[ldrobot][%s][%s]:%s\n",
+  fprintf(fp, "[LD][%s][%s]:%s\n",
          GetCurrentTime().c_str(),
          ulog_level_name(severity),
          msg);
@@ -98,21 +98,6 @@ void LdLidarLogger::UnSubscribe(void) {
 #endif
   is_subscrible_flag_ = false;
   return;
-}
-
-void LdLidarLogger::Test(void) {
-  int arg = 42;
-  // ULOG_DEBUG("arg=%d", arg);
-  // LD_DEBUG("arg=%d", arg);
-  // ULOG_INFO("arg=%d", arg);
-  // ULOG_WARNING("arg=%d", arg);  
-  // ULOG_ERROR("arg=%d", arg);
-  // ULOG_CRITICAL("arg=%d", arg);
-  // ULOG_ALWAYS("arg=%d", arg);
-  LD_LOG_DEBUG("arg=%d", arg);
-  LD_LOG_ERROR("arg=%d", arg);
-  LD_LOG_INFO("arg=%d", arg);
-  LD_LOG_WARNING("arg=%d", arg);
 }
 
 }

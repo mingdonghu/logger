@@ -23,10 +23,13 @@
 
 #define ENABLE_CONSOLE_LOG_OUT
 
+// #define ENABLE_TIMESTAMP_NSECOND
+
 #define LOGFILEPATH "./ldlidar-driver.log"
 
 #include <stdio.h>
 #include <string>
+#include <chrono>
 #include <stdlib.h>
 
 #ifndef LINUX
@@ -40,35 +43,35 @@
 
 
 struct LogVersion {
-  int		       nVersion;     
-  std::string  strDescruble;
+  int		       n_version;     
+  std::string  str_descruble;
 };
 
 
 class ILogRealization {
 public:
   virtual void Initializion(const char* path = NULL) = 0;
-  virtual void LogPrintA(const char* str) = 0;
+  virtual void LogPrintInf(const char* str) = 0;
   void free() {
     free(this);
     //this = NULL;
   };
 private:
-  virtual void free(ILogRealization *pLog) = 0 ;
+  virtual void free(ILogRealization *plogger) = 0 ;
 };
 
 
-#define  ILOGFREE(LogRealizationClass)  virtual void free(ILogRealization* pLog)	\
+#define  ILOGFREE(LogRealizationClass)  virtual void free(ILogRealization* plogger)	\
 {																					\
-    LogRealizationClass* pRealization = static_cast<LogRealizationClass*>(pLog);    \
-    if (pRealization != NULL){ delete pRealization;}								\
+    LogRealizationClass* prealization = static_cast<LogRealizationClass*>(plogger);    \
+    if (prealization != NULL){ delete prealization;}								\
 }
 
 class LogPrint :public ILogRealization {
 public:
   virtual void Initializion(const char* path = NULL);
-  virtual void free(ILogRealization *pLog);
-  virtual void LogPrintA(const char* str);
+  virtual void free(ILogRealization *plogger);
+  virtual void LogPrintInf(const char* str);
 };
 
 #ifndef LINUX
@@ -78,19 +81,19 @@ public:
     return ;
   }
 
-  virtual void LogPrintA(const char* str) {
+  virtual void LogPrintInf(const char* str) {
     OutputDebugString((LPCTSTR)str);
     OutputDebugString("\r\n");
   }
 
   ILOGFREE(LogOutputString)
 /*
-    virtual void free(ILogRealization *pLog)
+    virtual void free(ILogRealization *plogger)
     {
-        LogOutputString* pOutput = static_cast<LogOutputString*>(pLog);
-        if (pOutput != NULL)
+        LogOutputString* poutput = static_cast<LogOutputString*>(plogger);
+        if (poutput != NULL)
         {
-            delete pOutput;
+            delete poutput;
         }
     }
 */
@@ -108,58 +111,62 @@ public:
   };
 
   struct LOGMODULE_INFO {
-    LogLevel	    Loglevel;       
-    std::string		strFileName; 
-    std::string		strFuncName;  
-    int			      nLineNo;	  
-  }m_logInfo;
+    LogLevel	    loglevel;       
+    std::string		str_filename; 
+    std::string		str_funcname;  
+    int			      n_linenumber;	  
+  }logInfo_;
 
-  ILogRealization* m_pRealization; 
+  ILogRealization* p_realization_; 
 public:
-  static  LogModule* getInstance( __in const char* fileName, __in const char* funcName,__in int lineNo,LogLevel level,ILogRealization*plog = NULL );
+  static  LogModule* GetInstance( __in const char* filename, __in const char* funcname,__in int lineno, LogLevel level,ILogRealization*plog = NULL );
 
-  void LogPrintA(const char* format,...);
+  void LogPrintInf(const char* format,...);
 
 private:
   LogModule();
 
   ~LogModule();
 
-  void initLock();
+  void InitLock();
 
-  void realseLock();
+  void RealseLock();
 
-  void lock();
+  void Lock();
 
-  void unlock();
+  void UnLock();
 
-  std::string getCurrentTime();
+  std::string GetCurrentTime();
 
-  std::string getFormatValue(std::string strValue);
+  inline int64_t GetCurrentLocalTimeStamp() {
+    //// 获取系统时间戳
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> tp = 
+      std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now());
+    auto tmp = std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch());
+    return tmp.count();
+  }
 
-  std::string  getFormatValue(int nValue);
+  std::string GetFormatValue(std::string str_value);
 
-  std::string  getLevelValue(int level);
+  std::string  GetFormatValue(int n_value);
 
-  std::string ws2s(const std::wstring& ws);
+  std::string  GetLevelValue(int level);
 
-  std::wstring s2ws(const std::string& s);
-
-  static LogModule*  s_pLogModule;
+  static LogModule*  s_plog_module_;
 
 #ifndef LINUX
-    //??
-    CRITICAL_SECTION   m_Mutex;
+    CRITICAL_SECTION   mutex_lock_;
 #else
-    pthread_mutex_t    m_Mutex;
+    pthread_mutex_t    mutex_lock_;
 #endif
 
 
 };
 
-#define  LOG(level,format,...)   LogModule::getInstance(__FILE__, __FUNCTION__, __LINE__,level)->LogPrintA(format,__VA_ARGS__);
+#define  LOG(level,format,...)   LogModule::GetInstance(__FILE__, __FUNCTION__, __LINE__,level)->LogPrintInf(format,__VA_ARGS__);
 #define  LD_LOG_DEBUG(format,...)   LOG(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)
 #define  LD_LOG_INFO(format,...)    LOG(LogModule::INFO_LEVEL,format,__VA_ARGS__)
+#define  LD_LOG_WARN(format,...)    LOG(LogModule::WARNING_LEVEL,format,__VA_ARGS__)
 #define  LD_LOG_ERROR(format,...)   LOG(LogModule::ERROR_LEVEL,format,__VA_ARGS__)
 
 

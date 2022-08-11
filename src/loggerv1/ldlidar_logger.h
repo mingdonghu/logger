@@ -26,7 +26,6 @@ public:
   ~LdLidarLogger();
   static void Subscribe(void);
   static void UnSubscribe(void);
-  static void Test(void);
 
 private:
   static bool is_subscrible_flag_;
