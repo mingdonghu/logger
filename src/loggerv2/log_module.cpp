@@ -49,6 +49,19 @@ LogModule* LogModule::GetInstance(__in const char* filename, __in const char* fu
 	return s_plog_module_;
 }
 
+LogModule* LogModule::GetInstance(LogLevel level, ILogRealization*plog) {
+	if (s_plog_module_ == NULL) {
+		s_plog_module_ = new LogModule();
+	}
+	s_plog_module_->logInfo_.loglevel = level;
+	
+	if (plog != NULL) {
+		s_plog_module_->p_realization_->free();
+		s_plog_module_->p_realization_ = plog;
+	}
+	return s_plog_module_;
+}
+
 LogModule::LogModule() {
 	logInfo_.n_linenumber = -1;
 	logInfo_.str_filename = "";
@@ -95,6 +108,34 @@ void LogModule::LogPrintInf(const char* format,...) {
 		//行号
 		str_temp.append(GetFormatValue(logInfo_.n_linenumber));
 
+		va_list ptr;
+		va_start(ptr, format);
+		char c_value[VA_PARAMETER_MAX] = {0};
+		vsnprintf(c_value,sizeof(c_value),format,ptr);
+		va_end(ptr);
+
+		str_temp.append(GetFormatValue(c_value));
+
+		p_realization_->LogPrintInf(str_temp.c_str());
+	}
+	UnLock();
+}
+
+void LogModule::LogPrintNoLocationInf(const char* format,...) {
+	Lock();
+	if (p_realization_) {
+		std::string str_temp;
+		// manufacture
+		str_temp.append("[LDS]");
+		//LogLevel
+		str_temp.append(GetLevelValue(logInfo_.loglevel));
+		
+		//时间戳 uint is seconds
+		char s_stamp[100] = {0};
+		int64_t timestamp = GetCurrentLocalTimeStamp();
+		snprintf(s_stamp, 100, "[%ld.%ld]", (timestamp/1000000000), (timestamp%1000000000));
+		str_temp.append(s_stamp);
+		
 		va_list ptr;
 		va_start(ptr, format);
 		char c_value[VA_PARAMETER_MAX] = {0};
@@ -196,6 +237,7 @@ std::string  LogModule::GetLevelValue(int level){
 }
 
 void LogPrint::Initializion(const char* path) {
+	printf("%s", path);
 	return ;
 }
 
@@ -207,9 +249,11 @@ void LogPrint::free(ILogRealization *plogger) {
 }
 
 void LogPrint::LogPrintInf(const char* str) {
-#ifdef ENABLE_CONSOLE_LOG_OUT
+#ifdef ENABLE_CONSOLE_LOG_DIS
 	printf("%s\r\n", str);
-#else
+#endif
+
+#ifdef ENABLE_LOG_WRITE_TO_FILE
 	FILE *fp = fopen(LOGFILEPATH,"a");
 	if(!fp) {
 		printf("%s open filed!\n", LOGFILEPATH);

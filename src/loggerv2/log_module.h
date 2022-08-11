@@ -21,9 +21,11 @@
 
 #define LINUX
 
-#define ENABLE_CONSOLE_LOG_OUT
+#define ENABLE_LOG_DIS_OUTPUT
 
-// #define ENABLE_TIMESTAMP_NSECOND
+#define ENABLE_CONSOLE_LOG_DIS
+
+//#define ENABLE_LOG_WRITE_TO_FILE
 
 #define LOGFILEPATH "./ldlidar-driver.log"
 
@@ -50,6 +52,9 @@ struct LogVersion {
 
 class ILogRealization {
 public:
+  virtual ~ILogRealization() {
+
+  }
   virtual void Initializion(const char* path = NULL) = 0;
   virtual void LogPrintInf(const char* str) = 0;
   void free() {
@@ -119,9 +124,11 @@ public:
 
   ILogRealization* p_realization_; 
 public:
-  static  LogModule* GetInstance( __in const char* filename, __in const char* funcname,__in int lineno, LogLevel level,ILogRealization*plog = NULL );
+  static  LogModule* GetInstance( __in const char* filename, __in const char* funcname,__in int lineno, LogLevel level, ILogRealization*plog = NULL);
+  static  LogModule* GetInstance(LogLevel level, ILogRealization*plog = NULL);
 
   void LogPrintInf(const char* format,...);
+  void LogPrintNoLocationInf(const char* format,...);
 
 private:
   LogModule();
@@ -163,12 +170,32 @@ private:
 
 };
 
+//// 以下功能支持所处文件、函数、行号信息的打印
 #define  LOG(level,format,...)   LogModule::GetInstance(__FILE__, __FUNCTION__, __LINE__,level)->LogPrintInf(format,__VA_ARGS__);
+#ifdef ENABLE_LOG_DIS_OUTPUT
 #define  LD_LOG_DEBUG(format,...)   LOG(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)
 #define  LD_LOG_INFO(format,...)    LOG(LogModule::INFO_LEVEL,format,__VA_ARGS__)
 #define  LD_LOG_WARN(format,...)    LOG(LogModule::WARNING_LEVEL,format,__VA_ARGS__)
 #define  LD_LOG_ERROR(format,...)   LOG(LogModule::ERROR_LEVEL,format,__VA_ARGS__)
-
+#else
+#define  LD_LOG_DEBUG(format,...)   do {} while(0)
+#define  LD_LOG_INFO(format,...)    do {} while(0)
+#define  LD_LOG_WARN(format,...)    do {} while(0)
+#define  LD_LOG_ERROR(format,...)   do {} while(0)
+#endif
+//// 以下功能不支持所处文件、函数、行号信息的打印
+#ifdef ENABLE_LOG_DIS_OUTPUT
+#define  LOG_NO_DESCRI(level,format,...)   LogModule::GetInstance(level)->LogPrintNoLocationInf(format,__VA_ARGS__);
+#define  LDS_LOG_DEBUG(format,...)   LOG_NO_DESCRI(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)       
+#define  LDS_LOG_INFO(format,...)    LOG_NO_DESCRI(LogModule::INFO_LEVEL,format,__VA_ARGS__)        
+#define  LDS_LOG_WARN(format,...)    LOG_NO_DESCRI(LogModule::WARNING_LEVEL,format,__VA_ARGS__)     
+#define  LDS_LOG_ERROR(format,...)   LOG_NO_DESCRI(LogModule::ERROR_LEVEL,format,__VA_ARGS__)       
+#else
+#define  LDS_LOG_DEBUG(format,...)   do {} while(0)       
+#define  LDS_LOG_INFO(format,...)    do {} while(0)        
+#define  LDS_LOG_WARN(format,...)    do {} while(0)     
+#define  LDS_LOG_ERROR(format,...)   do {} while(0)     
+#endif
 
 #endif//__LDLIDAR_LOGGER_H__
 /********************* (C) COPYRIGHT SHENZHEN LDROBOT CO., LTD *******END OF FILE ********/

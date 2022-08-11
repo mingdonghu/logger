@@ -39,13 +39,12 @@ linux@ubuntu:/mnt/hgfs/hmd_ubuntu/logger/test$ ./demo
 int main(int argc, char** argv) {
   
   LD_LOG_INFO("test start","");
-
-  for (int i = 0; i < 10; i++) {
-    LD_LOG_DEBUG("test:%d", i);
-    LD_LOG_INFO("get data","");
-  }
   LD_LOG_WARN("dear friend, believe this is greate logger","");
   LD_LOG_INFO("test end","");
+
+  LDS_LOG_DEBUG("test1 ave is %d", 20);
+  LDS_LOG_INFO("test1 is ok","");
+  LDS_LOG_ERROR("test2 is abnormal","");
   
   return 0;
 }
@@ -53,27 +52,10 @@ int main(int argc, char** argv) {
 - 效果
 ``` bash
 linux@ubuntu:/mnt/hgfs/hmd_ubuntu/logger/test$ ./demo2
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][5][test start]
-[LDS][DEBUG][1660209444.151633347][demo2.cpp][main][8][test:0]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151655323][demo2.cpp][main][8][test:1]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151668173][demo2.cpp][main][8][test:2]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151679482][demo2.cpp][main][8][test:3]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151690954][demo2.cpp][main][8][test:4]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151702120][demo2.cpp][main][8][test:5]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151713177][demo2.cpp][main][8][test:6]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151724477][demo2.cpp][main][8][test:7]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151735835][demo2.cpp][main][8][test:8]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][DEBUG][1660209444.151746797][demo2.cpp][main][8][test:9]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][9][get data]
-[LDS][WARNING][Thu Aug 11 17:17:24 2022][demo2.cpp][main][11][dear friend, believe this is greate logger]
-[LDS][INFO][Thu Aug 11 17:17:24 2022][demo2.cpp][main][12][test end]
+[LDS][INFO][Thu Aug 11 21:13:06 2022][demo2.cpp][main][5][test start]
+[LDS][WARNING][Thu Aug 11 21:13:06 2022][demo2.cpp][main][6][dear friend, believe this is greate logger]
+[LDS][INFO][Thu Aug 11 21:13:06 2022][demo2.cpp][main][7][test end]
+[LDS][DEBUG][1660223586.873051740][test1 ave is 20]
+[LDS][INFO][1660223586.873057530][test1 is ok]
+[LDS][ERROR][1660223586.873062271][test2 is abnormal]
 ```
