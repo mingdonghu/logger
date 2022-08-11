@@ -21,7 +21,7 @@
 
 #define LINUX
 
-//#define ENABLE_CONSOLE_LOG_OUT
+#define ENABLE_CONSOLE_LOG_OUT
 
 #define LOGFILEPATH "./ldlidar-driver.log"
 
@@ -39,24 +39,22 @@
 #endif // ??????????????????????
 
 
-struct LogVersion
-{
-    int		nVersion;     //??????
-    std::string  strDescruble; //????
+struct LogVersion {
+  int		       nVersion;     
+  std::string  strDescruble;
 };
 
 
-class ILogRealization
-{
+class ILogRealization {
 public:
-    virtual void Initializion(const char* path = NULL) = 0;
-    virtual void LogPrintA(const char* str) = 0;
-    void free(){
-        free(this);
-        //this = NULL;
-    };
+  virtual void Initializion(const char* path = NULL) = 0;
+  virtual void LogPrintA(const char* str) = 0;
+  void free() {
+    free(this);
+    //this = NULL;
+  };
 private:
-    virtual void free(ILogRealization *pLog) = 0 ;
+  virtual void free(ILogRealization *pLog) = 0 ;
 };
 
 
@@ -66,35 +64,26 @@ private:
     if (pRealization != NULL){ delete pRealization;}								\
 }
 
-class LogPrint
-    :public ILogRealization
-{
-
+class LogPrint :public ILogRealization {
 public:
-    virtual void Initializion(const char* path = NULL);
-    virtual void free(ILogRealization *pLog);
-    virtual void LogPrintA(const char* str);
-
+  virtual void Initializion(const char* path = NULL);
+  virtual void free(ILogRealization *pLog);
+  virtual void LogPrintA(const char* str);
 };
 
 #ifndef LINUX
-class LogOutputString
-    :public ILogRealization
-{
-
+class LogOutputString :public ILogRealization {
 public:
-    virtual void Initializion(const char* path = NULL)
-    {
-        return ;
-    }
+  virtual void Initializion(const char* path = NULL) {
+    return ;
+  }
 
-    virtual void LogPrintA(const char* str)
-    {
-        OutputDebugString((LPCTSTR)str);
-        OutputDebugString("\r\n");
-    }
+  virtual void LogPrintA(const char* str) {
+    OutputDebugString((LPCTSTR)str);
+    OutputDebugString("\r\n");
+  }
 
-    ILOGFREE(LogOutputString)
+  ILOGFREE(LogOutputString)
 /*
     virtual void free(ILogRealization *pLog)
     {
@@ -109,58 +98,54 @@ public:
 #endif
 
 
-class LogModule
-{
+class LogModule {
 public:
+  enum LogLevel {
+    DEBUG_LEVEL,
+    WARNING_LEVEL,
+    ERROR_LEVEL,
+    INFO_LEVEL
+  };
 
-    enum LogLevel
-    {
-        DEBUG_LEVEL,
-        WARNING_LEVEL,
-        ERROR_LEVEL,
-        INFO_LEVEL
-    };
+  struct LOGMODULE_INFO {
+    LogLevel	    Loglevel;       
+    std::string		strFileName; 
+    std::string		strFuncName;  
+    int			      nLineNo;	  
+  }m_logInfo;
 
-    struct LOGMODULE_INFO
-    {
-        LogLevel	Loglevel;       //LogLevel
-        std::string		strFileName;  //???????
-        std::string		strFuncName;  //????????
-        int			nLineNo;	  //?????
-    }m_logInfo;
-
-    ILogRealization* m_pRealization; //????????
+  ILogRealization* m_pRealization; 
 public:
-    static  LogModule* getInstance( __in const char* fileName, __in const char* funcName,__in int lineNo,LogLevel level,ILogRealization*plog = NULL );
+  static  LogModule* getInstance( __in const char* fileName, __in const char* funcName,__in int lineNo,LogLevel level,ILogRealization*plog = NULL );
 
-    void LogPrintA(const char* format,...);
+  void LogPrintA(const char* format,...);
 
 private:
-    LogModule();
+  LogModule();
 
-    ~LogModule();
+  ~LogModule();
 
-    void initLock();
+  void initLock();
 
-    void realseLock();
+  void realseLock();
 
-    void lock();
+  void lock();
 
-    void unlock();
+  void unlock();
 
-    std::string getCurrentTime();
+  std::string getCurrentTime();
 
-    std::string getFormatValue(std::string strValue);
+  std::string getFormatValue(std::string strValue);
 
-    std::string  getFormatValue(int nValue);
+  std::string  getFormatValue(int nValue);
 
-    std::string  getLevelValue(int level);
+  std::string  getLevelValue(int level);
 
-    std::string ws2s(const std::wstring& ws);
+  std::string ws2s(const std::wstring& ws);
 
-    std::wstring s2ws(const std::string& s);
+  std::wstring s2ws(const std::string& s);
 
-    static LogModule*  s_pLogModule;
+  static LogModule*  s_pLogModule;
 
 #ifndef LINUX
     //??
@@ -178,5 +163,5 @@ private:
 #define  LD_LOG_ERROR(format,...)   LOG(LogModule::ERROR_LEVEL,format,__VA_ARGS__)
 
 
-
-#endif
+#endif//__LDLIDAR_LOGGER_H__
+/********************* (C) COPYRIGHT SHENZHEN LDROBOT CO., LTD *******END OF FILE ********/
