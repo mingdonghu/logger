@@ -199,6 +199,7 @@ void LogModule::UnLock() {
 
 std::string LogModule::GetCurrentTime() {
 	std::string curr_time;
+#if 0
 	//Current date/time based on current time
 	time_t now = time(0); 
 	// Convert current time to string
@@ -206,6 +207,18 @@ std::string LogModule::GetCurrentTime() {
 	// Last charactor of currentTime is "\n", so remove it
 	std::string current_time = curr_time.substr(0, curr_time.size()-1);
 	return current_time;
+#else
+  char stdtime_str[50] = {0};
+	time_t std_time = 0;
+	struct tm* local_time = NULL;
+	std_time = time(NULL);
+	local_time = localtime(&std_time);
+	snprintf(stdtime_str, 50, "%d-%d-%d,%d:%d:%d", 
+	local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday,
+	local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+	curr_time.assign(stdtime_str);
+  return curr_time;
+#endif
 }
 
 std::string LogModule::GetFormatValue(std::string str_value) {
