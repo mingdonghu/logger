@@ -13,8 +13,6 @@
 
 #include "ulog.h"
 
-#define LDLIDAR_SDK_LOG_FILE_OUTPUT_PATH "./ldlidar-driver.log"
-
 #define ENABLE_LOG_TO_CONSOLE (1)
 #define ENABLE_LOG_TO_FILE    (1)
 

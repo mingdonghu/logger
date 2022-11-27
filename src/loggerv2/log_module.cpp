@@ -82,8 +82,8 @@ void LogModule::LogPrintInf(const char* format,...) {
 	Lock();
 	if (p_realization_) {
 		std::string str_temp;
-		// manufacture
-		str_temp.append("[LDS]");
+		// manufacture   根据实际项目需求增加相关信息
+		str_temp.append("[LOG_A]");
 		//LogLevel
 		str_temp.append(GetLevelValue(logInfo_.loglevel));
 		switch (logInfo_.loglevel) {
@@ -133,8 +133,8 @@ void LogModule::LogPrintNoLocationInf(const char* format,...) {
 	Lock();
 	if (p_realization_) {
 		std::string str_temp;
-		// manufacture
-		str_temp.append("[LDS]");
+		// manufacture  根据实际项目需求增加相关信息
+		str_temp.append("[LOG_B]");
 		//LogLevel
 		str_temp.append(GetLevelValue(logInfo_.loglevel));
 		
@@ -246,7 +246,7 @@ std::string  LogModule::GetLevelValue(int level){
 		tmp = "DEBUG";
 		break;
 	case WARNING_LEVEL:
-		tmp = "WARNING";
+		tmp = "WARN";
 		break;
 	case ERROR_LEVEL:
 		tmp = "ERROR";
@@ -278,14 +278,15 @@ void LogPrint::free(ILogRealization *plogger) {
 }
 
 void LogPrint::LogPrintInf(const char* str) {
-#ifdef ENABLE_CONSOLE_LOG_DIS
+#ifdef ENABLE_CONSOLE_LOG_DISPLAY
 	printf("%s\r\n", str);
 #endif
 
 #ifdef ENABLE_LOG_WRITE_TO_FILE
-	FILE *fp = fopen(LOGFILEPATH,"a");
+  std::string log_file_name = GetLogFilePathName();
+	FILE *fp = fopen(log_file_name.c_str() ,"a");
 	if(!fp) {
-		printf("%s open filed!\n", LOGFILEPATH);
+		printf("%s open filed!\n", log_file_name.c_str());
 		return ;
 	}
 	printf_s(fp,str);

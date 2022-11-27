@@ -1,5 +1,6 @@
 # 日志库
-> 用于传感器SDK软件,一共两种，分别为loggerv1、loggerv2，建议使用loggerv2
+- 一共两种日志库，分别为loggerv1、loggerv2，建议使用loggerv2
+- 适用于C++89及以上标准下的开发
 
 ## ***loggerv1***
 ### 位于`src/loggerv1/`
@@ -22,11 +23,11 @@ int main(int argc, char** argv) {
 ```
 - 效果
 ``` bash
-linux@ubuntu:/mnt/hgfs/hmd_ubuntu/logger/test$ ./demo
-[LD][Thu Aug 11 17:40:13 2022][DEBUG]:hello, I am loggerv1 system.
-[LD][Thu Aug 11 17:40:13 2022][INFO]:LOG FILE WRITE TO ./ldlidar-driver.log
-[LD][Thu Aug 11 17:40:13 2022][WARNING]:welcom used.
-[LD][Thu Aug 11 17:40:13 2022][ERROR]:the loggerv1, support C++11 environment compile.
+linux@ubuntu:~/logger/test$ ./demo
+[LD][2022-11-27,18:14:11][DEBUG]:hello, I am loggerv1 system.
+[LD][2022-11-27,18:14:11][INFO]:LOG FILE WRITE TO ...
+[LD][2022-11-27,18:14:11][WARNING]:welcom used.
+[LD][2022-11-27,18:14:11][ERROR]:the loggerv1, support C++11 environment compile.
 ```
 
 ## ***loggerv2***
@@ -38,24 +39,29 @@ linux@ubuntu:/mnt/hgfs/hmd_ubuntu/logger/test$ ./demo
 
 int main(int argc, char** argv) {
   
-  LD_LOG_INFO("test start","");
-  LD_LOG_WARN("dear friend, believe this is greate logger","");
-  LD_LOG_INFO("test end","");
+  LOG_A_INFO("test start","");
+  LOG_A_DEBUG("I am debugger.","");
+  LOG_A_WARN("dear friend, believe this is greate logger","");
+  LOG_A_ERROR("test end","");
 
-  LDS_LOG_DEBUG("test1 ave is %d", 20);
-  LDS_LOG_INFO("test1 is ok","");
-  LDS_LOG_ERROR("test2 is abnormal","");
+  LOG_B_INFO("test start","");
+  LOG_B_DEBUG("I am debugger.","");
+  LOG_B_WARN("dear friend, believe this is greate logger","");
+  LOG_B_ERROR("test end","");
   
   return 0;
 }
+
 ```
 - 效果
 ``` bash
-linux@ubuntu:/mnt/hgfs/hmd_ubuntu/logger/test$ ./demo2
-[LDS][INFO][Thu Aug 11 21:13:06 2022][demo2.cpp][main][5][test start]
-[LDS][WARNING][Thu Aug 11 21:13:06 2022][demo2.cpp][main][6][dear friend, believe this is greate logger]
-[LDS][INFO][Thu Aug 11 21:13:06 2022][demo2.cpp][main][7][test end]
-[LDS][DEBUG][1660223586.873051740][test1 ave is 20]
-[LDS][INFO][1660223586.873057530][test1 is ok]
-[LDS][ERROR][1660223586.873062271][test2 is abnormal]
+linux@ubuntu:~/logger/test$ ./demo2
+[LOG_A][INFO][2022-11-27,17:55:23][demo2.cpp][main][5][test start]
+[LOG_A][DEBUG][1669542923.525749645][demo2.cpp][main][6][I am debugger.]
+[LOG_A][WARN][2022-11-27,17:55:23][demo2.cpp][main][7][dear friend, believe this is greate logger]
+[LOG_A][ERROR][2022-11-27,17:55:23][demo2.cpp][main][8][test end]
+[LOG_B][INFO][1669542923.525797099][test start]
+[LOG_B][DEBUG][1669542923.525799683][I am debugger.]
+[LOG_B][WARN][1669542923.525801032][dear friend, believe this is greate logger]
+[LOG_B][ERROR][1669542923.525803071][test end]
 ```

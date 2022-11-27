@@ -23,11 +23,9 @@
 
 #define ENABLE_LOG_DIS_OUTPUT
 
-#define ENABLE_CONSOLE_LOG_DIS
+#define ENABLE_CONSOLE_LOG_DISPLAY
 
-//#define ENABLE_LOG_WRITE_TO_FILE
-
-#define LOGFILEPATH "./ldlidar-driver.log"
+#define ENABLE_LOG_WRITE_TO_FILE
 
 #include <stdio.h>
 #include <string>
@@ -77,6 +75,20 @@ public:
   virtual void Initializion(const char* path = NULL);
   virtual void free(ILogRealization *plogger);
   virtual void LogPrintInf(const char* str);
+
+  inline std::string GetLogFilePathName(void) {
+    std::string curr_date_log_file;
+    char stdtime_str[50] = {0};
+    time_t std_time = 0;
+    struct tm* local_time = NULL;
+    std_time = time(NULL);
+    local_time = localtime(&std_time);
+    snprintf(stdtime_str, 50, "./logfile-%d-%2d-%2d-%2d.log", 
+    local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday,
+    local_time->tm_hour);
+    curr_date_log_file.assign(stdtime_str);
+    return curr_date_log_file;
+  }
 };
 
 #ifndef LINUX
@@ -145,7 +157,7 @@ private:
 
   std::string GetCurrentTime();
 
-  inline uint64_t GetCurrentLocalTimeStamp() {
+  inline uint64_t GetCurrentLocalTimeStamp(void) {
     //// 获取系统时间戳
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> tp = 
       std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now());
@@ -173,28 +185,28 @@ private:
 //// 以下功能支持所处文件、函数、行号信息的打印
 #define  LOG(level,format,...)   LogModule::GetInstance(__FILE__, __FUNCTION__, __LINE__,level)->LogPrintInf(format,__VA_ARGS__);
 #ifdef ENABLE_LOG_DIS_OUTPUT
-#define  LD_LOG_DEBUG(format,...)   LOG(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)
-#define  LD_LOG_INFO(format,...)    LOG(LogModule::INFO_LEVEL,format,__VA_ARGS__)
-#define  LD_LOG_WARN(format,...)    LOG(LogModule::WARNING_LEVEL,format,__VA_ARGS__)
-#define  LD_LOG_ERROR(format,...)   LOG(LogModule::ERROR_LEVEL,format,__VA_ARGS__)
+#define  LOG_A_DEBUG(format,...)   LOG(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)
+#define  LOG_A_INFO(format,...)    LOG(LogModule::INFO_LEVEL,format,__VA_ARGS__)
+#define  LOG_A_WARN(format,...)    LOG(LogModule::WARNING_LEVEL,format,__VA_ARGS__)
+#define  LOG_A_ERROR(format,...)   LOG(LogModule::ERROR_LEVEL,format,__VA_ARGS__)
 #else
-#define  LD_LOG_DEBUG(format,...)   do {} while(0)
-#define  LD_LOG_INFO(format,...)    do {} while(0)
-#define  LD_LOG_WARN(format,...)    do {} while(0)
-#define  LD_LOG_ERROR(format,...)   do {} while(0)
+#define  LOG_A_DEBUG(format,...)   do {} while(0)
+#define  LOG_A_INFO(format,...)    do {} while(0)
+#define  LOG_A_WARN(format,...)    do {} while(0)
+#define  LOG_A_ERROR(format,...)   do {} while(0)
 #endif
 //// 以下功能不支持所处文件、函数、行号信息的打印
 #ifdef ENABLE_LOG_DIS_OUTPUT
 #define  LOG_NO_DESCRI(level,format,...)   LogModule::GetInstance(level)->LogPrintNoLocationInf(format,__VA_ARGS__);
-#define  LDS_LOG_DEBUG(format,...)   LOG_NO_DESCRI(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)       
-#define  LDS_LOG_INFO(format,...)    LOG_NO_DESCRI(LogModule::INFO_LEVEL,format,__VA_ARGS__)        
-#define  LDS_LOG_WARN(format,...)    LOG_NO_DESCRI(LogModule::WARNING_LEVEL,format,__VA_ARGS__)     
-#define  LDS_LOG_ERROR(format,...)   LOG_NO_DESCRI(LogModule::ERROR_LEVEL,format,__VA_ARGS__)       
+#define  LOG_B_DEBUG(format,...)   LOG_NO_DESCRI(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)       
+#define  LOG_B_INFO(format,...)    LOG_NO_DESCRI(LogModule::INFO_LEVEL,format,__VA_ARGS__)        
+#define  LOG_B_WARN(format,...)    LOG_NO_DESCRI(LogModule::WARNING_LEVEL,format,__VA_ARGS__)     
+#define  LOG_B_ERROR(format,...)   LOG_NO_DESCRI(LogModule::ERROR_LEVEL,format,__VA_ARGS__)       
 #else
-#define  LDS_LOG_DEBUG(format,...)   do {} while(0)       
-#define  LDS_LOG_INFO(format,...)    do {} while(0)        
-#define  LDS_LOG_WARN(format,...)    do {} while(0)     
-#define  LDS_LOG_ERROR(format,...)   do {} while(0)     
+#define  LOG_B_DEBUG(format,...)   do {} while(0)       
+#define  LOG_B_INFO(format,...)    do {} while(0)        
+#define  LOG_B_WARN(format,...)    do {} while(0)     
+#define  LOG_B_ERROR(format,...)   do {} while(0)     
 #endif
 
 #endif//__LDLIDAR_LOGGER_H__

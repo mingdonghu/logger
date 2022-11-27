@@ -6,3 +6,5 @@ all:
 clean:
 	@rm ./demo demo2
 	@echo "clean commplie generate file"
+	@rm *.log
+	@echo "clean all log file"
