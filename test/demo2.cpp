@@ -2,15 +2,18 @@
 
 int main(int argc, char** argv) {
   
-  LOG_A_INFO("test start","");
-  LOG_A_DEBUG("I am debugger.","");
-  LOG_A_WARN("dear friend, believe this is greate logger","");
-  LOG_A_ERROR("test end","");
+  LOG_INFO("1.test start","");
+  LOG_DEBUG("1.I am debugger.","");
+  LOG_WARN("1.dear friend, believe this is greate logger","");
+  LOG_ERROR("1.test end","");
 
-  LOG_B_INFO("test start","");
-  LOG_B_DEBUG("I am debugger.","");
-  LOG_B_WARN("dear friend, believe this is greate logger","");
-  LOG_B_ERROR("test end","");
+  LOG_INFO_LITE("2.test start","");
+  LOG_DEBUG_LITE("2.I am debugger.","");
+  LOG_WARN_LITE("2.dear friend, believe this is greate logger","");
+  LOG_ERROR_LITE("2.test end","");
+
+  LOG_INFO_PRINT("3.test start\n","");
+  LOG_DEBUG_PRINT("3.I am debugger.\n","");
   
   return 0;
 }

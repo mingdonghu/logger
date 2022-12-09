@@ -65,7 +65,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef __cplusplus
 extern "C" {
-    #endif
+#endif
 
 typedef enum {
   ULOG_TRACE_LEVEL=100,
@@ -103,10 +103,10 @@ typedef enum {
   #define ULOG_ALWAYS(...) ulog_message(ULOG_ALWAYS_LEVEL, __VA_ARGS__)
 
   //// used on the ldlidar driver sdk
-  #define LD_LOG_DEBUG(...) ulog_message(ULOG_DEBUG_LEVEL, __VA_ARGS__)
-  #define LD_LOG_INFO(...) ulog_message(ULOG_INFO_LEVEL, __VA_ARGS__)
-  #define LD_LOG_WARNING(...) ulog_message(ULOG_WARNING_LEVEL, __VA_ARGS__)
-  #define LD_LOG_ERROR(...) ulog_message(ULOG_ERROR_LEVEL, __VA_ARGS__)
+  #define LOGGER_DEBUG(...) ulog_message(ULOG_DEBUG_LEVEL, __VA_ARGS__)
+  #define LOGGER_INFO(...) ulog_message(ULOG_INFO_LEVEL, __VA_ARGS__)
+  #define LOGGER_WARNING(...) ulog_message(ULOG_WARNING_LEVEL, __VA_ARGS__)
+  #define LOGGER_ERROR(...) ulog_message(ULOG_ERROR_LEVEL, __VA_ARGS__)
 #else
   // uLog vanishes when disabled at compile time...
   #define ULOG_INIT() do {} while(0)

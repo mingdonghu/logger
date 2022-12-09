@@ -1,11 +1,11 @@
 /**
-* @file         ldlidar_logger.h
-* @author       LDRobot (support@ldrobot.com)
+* @file         log_module.h
+* @author       David Hu (hmd_hubei_cn@163.com)
 * @brief         
 * @version      0.1
 * @date         2022.08.10
 * @note          
-* @copyright    Copyright (c) 2022  SHENZHEN LDROBOT CO., LTD. All rights reserved.
+* @copyright    Copyright (c) 2022  DAVID HU All rights reserved.
 * Licensed under the MIT License (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License in the file LICENSE
@@ -23,7 +23,7 @@
 
 #define ENABLE_LOG_DIS_OUTPUT
 
-#define ENABLE_CONSOLE_LOG_DISPLAY
+#define ENABLE_CONSOLE_LOG_DISPALY
 
 #define ENABLE_LOG_WRITE_TO_FILE
 
@@ -55,6 +55,8 @@ public:
   }
   virtual void Initializion(const char* path = NULL) = 0;
   virtual void LogPrintInf(const char* str) = 0;
+  virtual void LogPrintData(const char* str) = 0;
+
   void free() {
     free(this);
     //this = NULL;
@@ -75,6 +77,7 @@ public:
   virtual void Initializion(const char* path = NULL);
   virtual void free(ILogRealization *plogger);
   virtual void LogPrintInf(const char* str);
+  virtual void LogPrintData(const char* str);
 
   inline std::string GetLogFilePathName(void) {
     std::string curr_date_log_file;
@@ -83,7 +86,21 @@ public:
     struct tm* local_time = NULL;
     std_time = time(NULL);
     local_time = localtime(&std_time);
-    snprintf(stdtime_str, 50, "./logfile-%d-%2d-%2d-%2d.log", 
+    snprintf(stdtime_str, 50, "./lds-%d-%d-%d-%d.log", 
+    local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday,
+    local_time->tm_hour);
+    curr_date_log_file.assign(stdtime_str);
+    return curr_date_log_file;
+  }
+
+  inline std::string GetOriginDataFilePathName(void) {
+    std::string curr_date_log_file;
+    char stdtime_str[50] = {0};
+    time_t std_time = 0;
+    struct tm* local_time = NULL;
+    std_time = time(NULL);
+    local_time = localtime(&std_time);
+    snprintf(stdtime_str, 50, "./serialdata-%d-%d-%d-%d.log", 
     local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday,
     local_time->tm_hour);
     curr_date_log_file.assign(stdtime_str);
@@ -136,11 +153,13 @@ public:
 
   ILogRealization* p_realization_; 
 public:
-  static  LogModule* GetInstance( __in const char* filename, __in const char* funcname,__in int lineno, LogLevel level, ILogRealization*plog = NULL);
-  static  LogModule* GetInstance(LogLevel level, ILogRealization*plog = NULL);
+  static  LogModule* GetInstance( __in const char* filename, __in const char* funcname,__in int lineno, LogLevel level, ILogRealization* plog = NULL);
+  static  LogModule* GetInstance(LogLevel level, ILogRealization* plog = NULL);
+  static  LogModule* GetInstancePrintOriginData(LogLevel level, ILogRealization* plog = NULL);
 
   void LogPrintInf(const char* format,...);
   void LogPrintNoLocationInf(const char* format,...);
+  void LogPrintOriginData(const char* format,...);
 
 private:
   LogModule();
@@ -157,13 +176,7 @@ private:
 
   std::string GetCurrentTime();
 
-  inline uint64_t GetCurrentLocalTimeStamp(void) {
-    //// 获取系统时间戳
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> tp = 
-      std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now());
-    auto tmp = std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch());
-    return (uint64_t)tmp.count();
-  }
+  std::string GetCurrentLocalTimeStamp();
 
   std::string GetFormatValue(std::string str_value);
 
@@ -178,36 +191,45 @@ private:
 #else
     pthread_mutex_t    mutex_lock_;
 #endif
-
-
 };
 
 //// 以下功能支持所处文件、函数、行号信息的打印
+#ifdef ENABLE_LOG_DIS_OUTPUT
 #define  LOG(level,format,...)   LogModule::GetInstance(__FILE__, __FUNCTION__, __LINE__,level)->LogPrintInf(format,__VA_ARGS__);
-#ifdef ENABLE_LOG_DIS_OUTPUT
-#define  LOG_A_DEBUG(format,...)   LOG(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)
-#define  LOG_A_INFO(format,...)    LOG(LogModule::INFO_LEVEL,format,__VA_ARGS__)
-#define  LOG_A_WARN(format,...)    LOG(LogModule::WARNING_LEVEL,format,__VA_ARGS__)
-#define  LOG_A_ERROR(format,...)   LOG(LogModule::ERROR_LEVEL,format,__VA_ARGS__)
+#define  LOG_DEBUG(format,...)   LOG(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)
+#define  LOG_INFO(format,...)    LOG(LogModule::INFO_LEVEL,format,__VA_ARGS__)
+#define  LOG_WARN(format,...)    LOG(LogModule::WARNING_LEVEL,format,__VA_ARGS__)
+#define  LOG_ERROR(format,...)   LOG(LogModule::ERROR_LEVEL,format,__VA_ARGS__)
 #else
-#define  LOG_A_DEBUG(format,...)   do {} while(0)
-#define  LOG_A_INFO(format,...)    do {} while(0)
-#define  LOG_A_WARN(format,...)    do {} while(0)
-#define  LOG_A_ERROR(format,...)   do {} while(0)
-#endif
-//// 以下功能不支持所处文件、函数、行号信息的打印
-#ifdef ENABLE_LOG_DIS_OUTPUT
-#define  LOG_NO_DESCRI(level,format,...)   LogModule::GetInstance(level)->LogPrintNoLocationInf(format,__VA_ARGS__);
-#define  LOG_B_DEBUG(format,...)   LOG_NO_DESCRI(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)       
-#define  LOG_B_INFO(format,...)    LOG_NO_DESCRI(LogModule::INFO_LEVEL,format,__VA_ARGS__)        
-#define  LOG_B_WARN(format,...)    LOG_NO_DESCRI(LogModule::WARNING_LEVEL,format,__VA_ARGS__)     
-#define  LOG_B_ERROR(format,...)   LOG_NO_DESCRI(LogModule::ERROR_LEVEL,format,__VA_ARGS__)       
-#else
-#define  LOG_B_DEBUG(format,...)   do {} while(0)       
-#define  LOG_B_INFO(format,...)    do {} while(0)        
-#define  LOG_B_WARN(format,...)    do {} while(0)     
-#define  LOG_B_ERROR(format,...)   do {} while(0)     
+#define  LOG_DEBUG(format,...)   do {} while(0)
+#define  LOG_INFO(format,...)    do {} while(0)
+#define  LOG_WARN(format,...)    do {} while(0)
+#define  LOG_ERROR(format,...)   do {} while(0)
 #endif
 
-#endif//__LDLIDAR_LOGGER_H__
-/********************* (C) COPYRIGHT SHENZHEN LDROBOT CO., LTD *******END OF FILE ********/
+//// 以下功能不支持所处文件、函数、行号信息的打印
+#ifdef ENABLE_LOG_DIS_OUTPUT
+#define  LOG_LITE(level,format,...)   LogModule::GetInstance(level)->LogPrintNoLocationInf(format,__VA_ARGS__);
+#define  LOG_DEBUG_LITE(format,...)   LOG_LITE(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)       
+#define  LOG_INFO_LITE(format,...)    LOG_LITE(LogModule::INFO_LEVEL,format,__VA_ARGS__)        
+#define  LOG_WARN_LITE(format,...)    LOG_LITE(LogModule::WARNING_LEVEL,format,__VA_ARGS__)     
+#define  LOG_ERROR_LITE(format,...)   LOG_LITE(LogModule::ERROR_LEVEL,format,__VA_ARGS__)       
+#else
+#define  LOG_DEBUG_LITE(format,...)   do {} while(0)       
+#define  LOG_INFO_LITE(format,...)    do {} while(0)        
+#define  LOG_WARN_LITE(format,...)    do {} while(0)     
+#define  LOG_ERROR_LITE(format,...)   do {} while(0)     
+#endif
+
+//// 等同于printf和fprintf的功能
+#ifdef ENABLE_LOG_DIS_OUTPUT
+#define  LOG_PRINT(level,format,...)   LogModule::GetInstancePrintOriginData(level)->LogPrintOriginData(format,__VA_ARGS__);
+#define  LOG_DEBUG_PRINT(format,...)   LOG_PRINT(LogModule::DEBUG_LEVEL,format,__VA_ARGS__)       
+#define  LOG_INFO_PRINT(format,...)    LOG_PRINT(LogModule::INFO_LEVEL,format,__VA_ARGS__)     
+#else
+#define  LOG_DEBUG_PRINT(format,...)   do {} while(0)       
+#define  LOG_INFO_PRINT(format,...)    do {} while(0)          
+#endif
+
+#endif//__LOGGER_MODULE_H__
+/********************* (C) COPYRIGHT DAVID HU *******END OF FILE ********/

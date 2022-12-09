@@ -1,13 +1,13 @@
-#include "ldlidar_logger.h"
+#include "loggers.h"
 
 int main(int argc, char** argv) {
   
-  ldlidar::LdLidarLogger::Subscribe();
+  Loggers::Subscribe();
 
-  LD_LOG_DEBUG("hello, I am loggerv1 system.");
-  LD_LOG_INFO("LOG FILE WRITE TO ...");
-  LD_LOG_WARNING("welcom used.");
-  LD_LOG_ERROR("the loggerv1, support C++11 environment compile.");
+  LOGGER_DEBUG("hello, I am loggerv1 system.");
+  LOGGER_INFO("LOG FILE WRITE TO ...");
+  LOGGER_WARNING("welcom used.");
+  LOGGER_ERROR("the loggerv1, support C++11 environment compile.");
   
   return 0;
 }

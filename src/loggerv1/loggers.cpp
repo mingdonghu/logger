@@ -1,14 +1,14 @@
 /**
-* @file         ldlidar_logger.cpp
-* @author       LDRobot (support@ldrobot.com)
+* @file         loggers.cpp
+* @author       David Hu (hmd_hubei_cn@163.com)
 * @brief         
 * @version      0.1
 * @date         2022.08.10
 * @note          
-* @copyright    Copyright (c) 2022  SHENZHEN LDROBOT CO., LTD. All rights reserved.
+* @copyright    Copyright (c) 2022  DAVID HU All rights reserved.
 **/
 
-#include "ldlidar_logger.h"
+#include "loggers.h"
 
 #include <mutex>
 #include <functional>
@@ -20,8 +20,6 @@
 
 #include <stdarg.h>
 #define __in
-
-namespace ldlidar {
 
 std::mutex mutex_lock1_;
 std::mutex mutex_lock2_;
@@ -66,7 +64,7 @@ std::string GetLogFilePathName(void) {
 
 void LoggerOutputToConsole(ulog_level_t severity, char *msg) {
   std::lock_guard<std::mutex> lg(mutex_lock1_);
-  printf("[LD][%s][%s]:%s\n",
+  printf("[LOG][%s][%s]:%s\n",
         GetCurrentTime().c_str(),
         ulog_level_name(severity),
         msg);
@@ -81,24 +79,24 @@ void LoggerOutputToFile(ulog_level_t severity, char *msg) {
       ldlidar_sdk_log_file_output_path.c_str() , errno);
     return;
   }
-  fprintf(fp, "[LD][%s][%s]:%s\n",
+  fprintf(fp, "[LOG][%s][%s]:%s\n",
         GetCurrentTime().c_str(),
         ulog_level_name(severity),
         msg);
   fclose(fp);
 }
 
-bool LdLidarLogger::is_subscrible_flag_ = false;
+bool Loggers::is_subscrible_flag_ = false;
 
-LdLidarLogger::LdLidarLogger() {
+Loggers::Loggers() {
   
 }
 
-LdLidarLogger::~LdLidarLogger() {
+Loggers::~Loggers() {
   
 }
 
-void LdLidarLogger::Subscribe(void) {
+void Loggers::Subscribe(void) {
   if (is_subscrible_flag_) {
     return;
   }
@@ -114,7 +112,7 @@ void LdLidarLogger::Subscribe(void) {
   return;
 }
 
-void LdLidarLogger::UnSubscribe(void) {
+void Loggers::UnSubscribe(void) {
   if (!is_subscrible_flag_) {
     return;
   }
@@ -128,5 +126,4 @@ void LdLidarLogger::UnSubscribe(void) {
   return;
 }
 
-}
-/********************* (C) COPYRIGHT SHENZHEN LDROBOT CO., LTD *******END OF FILE ********/
+/********************* (C) COPYRIGHT DAVID HU  *******END OF FILE ********/
