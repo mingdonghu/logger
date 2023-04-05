@@ -24,7 +24,7 @@
 #include <comutil.h>  
 #pragma comment(lib, "comsuppw.lib")
 #else
-#include <stdlib.h>
+//#include <stdlib.h>
 #endif
 
 //使用vswprintf会出现奔溃的情况如果，传入数据大于 VA_PARAMETER_MAX 就会出现崩溃

@@ -27,15 +27,16 @@
 //#define ENABLE_LOG_WRITE_TO_FILE
 
 #include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+
 #include <string>
 #include <chrono>
-#include <stdlib.h>
 
 #ifndef __linux__
 #include <windows.h>
 #else
-//#include <pthread.h>
-#include <stdarg.h>
+#include <pthread.h>
 #define printf_s(fileptr,str)  (fprintf(fileptr,"%s",str))
 #define __in
 #endif // ??????????????????????

@@ -1,10 +1,10 @@
 all:
 	@echo "start commplie"
-	@g++ demo.cpp ../src/loggerv1/loggers.cpp ../src/loggerv1/ulog.c -I ../src/loggerv1/ -std=c++11 -o demo
-	@g++ demo2.cpp ../src/loggerv2/log_module.cpp -I ../src/loggerv2/ -std=c++11 -lpthread -o demo2
+	@g++ demo_logger_c.cpp ../src/logger_c/*.c -I ../src/logger_c/ -lpthread -o demo_logger_c
+	@g++ demo_logger_cpp.cpp ../src/logger_cpp/*.cpp -I ../src/logger_cpp/ -std=c++11 -lpthread -o demo_logger_cpp
 	@echo "end commplie"
 clean:
-	@rm ./demo demo2
+	@rm ./demo_logger_c demo_logger_cpp
 	@echo "clean commplie generate file"
 	@rm *.log
 	@echo "clean all log file"

@@ -1,7 +1,6 @@
 #include "log_module.h"
 
 int main(int argc, char** argv) {
-  
   LOG_INFO("1.test start","");
   LOG_DEBUG("1.I am debugger.","");
   LOG_WARN("1.dear friend, believe this is greate logger","");

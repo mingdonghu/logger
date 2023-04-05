@@ -63,9 +63,38 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef ULOG_H_
 #define ULOG_H_
 
+// The following macros enable or disable uLog.  If `ULOG_ENABLED` is
+// defined at compile time, a macro such as `ULOG_INFO(...)` expands
+// into `ulog_message(ULOG_INFO_LEVEL, ...)`.  If `ULOG_ENABLED` is not
+// defined, then the same macro expands into `do {} while(0)` and will
+// not generate any code at all.  
+//
+// There are two ways to enable uLog: you can uncomment the following
+// line, or -- if it is commented out -- you can add -DULOG_ENABLED to
+// your compiler switches.
+#define ULOG_ENABLED
+#define __in
+
+// #define FREERTOS_MUTEX_ENABLED
+#ifndef FREERTOS_MUTEX_ENABLED
+#ifdef __linux__
+#define LINUX_MUTEX_ENABLED
+#else
+// #ifdef _WIN32
+#define WIN32_MUTEX_ENABLED
+// #endif
+#endif
+#endif
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 
 typedef enum {
   ULOG_TRACE_LEVEL=100,
@@ -77,43 +106,27 @@ typedef enum {
   ULOG_ALWAYS_LEVEL
 } ulog_level_t;
 
-// The following macros enable or disable uLog.  If `ULOG_ENABLED` is
-// defined at compile time, a macro such as `ULOG_INFO(...)` expands
-// into `ulog_message(ULOG_INFO_LEVEL, ...)`.  If `ULOG_ENABLED` is not
-// defined, then the same macro expands into `do {} while(0)` and will
-// not generate any code at all.  
-//
-// There are two ways to enable uLog: you can uncomment the following
-// line, or -- if it is commented out -- you can add -DULOG_ENABLED to
-// your compiler switches.
-#define ULOG_ENABLED
-
 #ifdef ULOG_ENABLED
   #define ULOG_INIT() ulog_init()
   #define ULOG_SUBSCRIBE(a, b) ulog_subscribe(a, b)
   #define ULOG_UNSUBSCRIBE(a) ulog_unsubscribe(a)
   #define ulog_level_name(a) ulog_level_name(a)
-  #define ULOG(...) ulog_message(__VA_ARGS__)
-  #define ULOG_TRACE(...) ulog_message(ULOG_TRACE_LEVEL, __VA_ARGS__)
-  #define ULOG_DEBUG(...) ulog_message(ULOG_DEBUG_LEVEL, __VA_ARGS__)
-  #define ULOG_INFO(...) ulog_message(ULOG_INFO_LEVEL, __VA_ARGS__)
-  #define ULOG_WARNING(...) ulog_message(ULOG_WARNING_LEVEL, __VA_ARGS__)
-  #define ULOG_ERROR(...) ulog_message(ULOG_ERROR_LEVEL, __VA_ARGS__)
-  #define ULOG_CRITICAL(...) ulog_message(ULOG_CRITICAL_LEVEL, __VA_ARGS__)
-  #define ULOG_ALWAYS(...) ulog_message(ULOG_ALWAYS_LEVEL, __VA_ARGS__)
+  // #define ULOG(...) ulog_message(__VA_ARGS__)
+  #define ULOG_TRACE(...) ulog_message(ULOG_TRACE_LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+  #define ULOG_DEBUG(...) ulog_message(ULOG_DEBUG_LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+  #define ULOG_INFO(...) ulog_message(ULOG_INFO_LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+  #define ULOG_WARNING(...) ulog_message(ULOG_WARNING_LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+  #define ULOG_ERROR(...) ulog_message(ULOG_ERROR_LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+  #define ULOG_CRITICAL(...) ulog_message(ULOG_CRITICAL_LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+  #define ULOG_ALWAYS(...) ulog_message(ULOG_ALWAYS_LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
 
-  //// used on the ldlidar driver sdk
-  #define LOGGER_DEBUG(...) ulog_message(ULOG_DEBUG_LEVEL, __VA_ARGS__)
-  #define LOGGER_INFO(...) ulog_message(ULOG_INFO_LEVEL, __VA_ARGS__)
-  #define LOGGER_WARNING(...) ulog_message(ULOG_WARNING_LEVEL, __VA_ARGS__)
-  #define LOGGER_ERROR(...) ulog_message(ULOG_ERROR_LEVEL, __VA_ARGS__)
 #else
   // uLog vanishes when disabled at compile time...
   #define ULOG_INIT() do {} while(0)
   #define ULOG_SUBSCRIBE(a, b) do {} while(0)
   #define ULOG_UNSUBSCRIBE(a) do {} while(0)
   #define ulog_level_name(a) do {} while(0)
-  #define ULOG(s, f, ...) do {} while(0)
+  // #define ULOG(s, f, ...) do {} while(0)
   #define ULOG_TRACE(f, ...) do {} while(0)
   #define ULOG_DEBUG(f, ...) do {} while(0)
   #define ULOG_INFO(f, ...) do {} while(0)
@@ -144,7 +157,7 @@ void ulog_init(void);
 ulog_err_t ulog_subscribe(ulog_function_t fn, ulog_level_t threshold);
 ulog_err_t ulog_unsubscribe(ulog_function_t fn);
 const char *ulog_level_name(ulog_level_t level);
-void ulog_message(ulog_level_t severity, const char *fmt, ...);
+void ulog_message(ulog_level_t severity, __in const char* filename, __in int lineno, __in const char* funcname, const char *fmt, ...);
 
 #ifdef __cplusplus
 }
