@@ -9,25 +9,33 @@
 ## 1. logger_c
 
 ``` c++
-#include "logger.h"
+#include "m_logger.h"
 
 int main(int argc, char** argv) {
-  logger_init();
+  m_logger_init();
   LOG_DEBUG("hello, I am logger_c system. %d\n", 2023);
   LOG_INFO("support C/C++ on the Win32/FreeRTOS/Linux platform environment compile.\n");
   LOG_WARNING("welcome to use it.\n");
-  LOG_ERROR("....\n");
+  int ret = -1;
+  if (ret < 0) {
+    error_handle(__FILE__, __LINE__);
+  }
   return 0;
 }
 
 ```
 - 效果
 ``` bash
-hmd@MingDong:/mnt/d/project/logger/test$ ./demo_logger_c
-[LOG][DEBUG][demo_logger_c.cpp:5: main()]hello, I am logger_c system. 2023
-[LOG][INFO][demo_logger_c.cpp:6: main()]support C/C++ on the Win32/FreeRTOS/Linux platform environment compile.
-[LOG][WARNING][demo_logger_c.cpp:7: main()]welcome to use it.
-[LOG][ERROR][demo_logger_c.cpp:8: main()]....
+davidhu@ubuntu18-04-vm:/mnt/hgfs/vmshare/004Middleware_and_Module/logger/test$ ./demo_logger_c
+[D][demo_logger_c.cpp:5]hello, I am logger_c system. 2023
+[I][demo_logger_c.cpp:6]support C/C++ on the Win32/FreeRTOS/Linux platform environment compile.
+[W][demo_logger_c.cpp:7]welcome to use it.
+[E][../src/logger_c/m_logger.c:6]error:demo_logger_c.cpp:10
+[E][../src/logger_c/m_logger.c:6]error:demo_logger_c.cpp:10
+[E][../src/logger_c/m_logger.c:6]error:demo_logger_c.cpp:10
+[E][../src/logger_c/m_logger.c:6]error:demo_logger_c.cpp:10
+[E][../src/logger_c/m_logger.c:6]error:demo_logger_c.cpp:10
+[E][../src/logger_c/m_logger.c:6]error:demo_logger_c.cpp:10
 ```
 
 ---
@@ -55,15 +63,15 @@ int main(int argc, char** argv) {
 ```
 - 效果
 ``` bash
-hmd@MingDong:/mnt/d/project/logger/test$ ./demo_logger_cpp
-[LOG][2023-4-5,15:46:17][1680680777.20415700][INFO][demo_logger_cpp.cpp][main][5][1.test start]
-[LOG][2023-4-5,15:46:17][1680680777.20723200][DEBUG][demo_logger_cpp.cpp][main][6][1.I am debugger.]
-[LOG][2023-4-5,15:46:17][1680680777.20932400][WARN][demo_logger_cpp.cpp][main][7][1.dear friend, believe this is greate logger]
-[LOG][2023-4-5,15:46:17][1680680777.21158500][ERROR][demo_logger_cpp.cpp][main][8][1.test end]
-[LOG][2023-4-5,15:46:17][1680680777.21359300][INFO][2.test start]
-[LOG][2023-4-5,15:46:17][1680680777.21592900][DEBUG][2.I am debugger.]
-[LOG][2023-4-5,15:46:17][1680680777.21827500][WARN][2.dear friend, believe this is greate logger]
-[LOG][2023-4-5,15:46:17][1680680777.22066200][ERROR][2.test end]
-[LOG][2023-4-5,15:46:17][1680680777.22239100][INFO]3.test start
+davidhu@ubuntu18-04-vm:/mnt/hgfs/vmshare/004Middleware_and_Module/logger/test$ ./demo_logger_cpp
+[2023-9-3,20:21:41][1693743701.595306250][LOG][I][demo_logger_cpp.cpp:4:main()]1.test start
+[2023-9-3,20:21:41][1693743701.595318753][LOG][D][demo_logger_cpp.cpp:5:main()]1.I am debugger.
+[2023-9-3,20:21:41][1693743701.595322861][LOG][W][demo_logger_cpp.cpp:6:main()]1.dear friend, believe this is greate logger
+[2023-9-3,20:21:41][1693743701.595326758][LOG][E][demo_logger_cpp.cpp:7:main()]1.test end
+[2023-9-3,20:21:41][1693743701.595329674][LOG][I]2.test start
+[2023-9-3,20:21:41][1693743701.595332379][LOG][D]2.I am debugger.
+[2023-9-3,20:21:41][1693743701.595334793][LOG][W]2.dear friend, believe this is greate logger
+[2023-9-3,20:21:41][1693743701.595337138][LOG][E]2.test end
+[2023-9-3,20:21:41][1693743701.595339632][LOG][I]3.test start
 3.I am debugger.
 ```

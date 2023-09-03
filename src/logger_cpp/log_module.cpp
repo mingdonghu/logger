@@ -95,20 +95,21 @@ void LogModule::LogPrintInf(const char* format,...) {
 	Lock();
 	if (p_realization_) {
 		std::string str_temp;
-		// manufacture
-		str_temp.append("[LOG]");
 		//时间   [week month day hours:minutes:seconds year]
 		str_temp.append(GetFormatValue(GetCurrentTime()));
     //时间戳 uint is seconds
 		str_temp.append(GetCurrentLocalTimeStamp());
+		// manufacture
+		str_temp.append("[LOG]");
 		//LogLevel
 		str_temp.append(GetLevelValue(logInfo_.loglevel));
 		//文件名称
-		str_temp.append(GetFormatValue(logInfo_.str_filename));
-		// 函数名称
-		str_temp.append(GetFormatValue(logInfo_.str_funcname));
+		// str_temp.append(GetFormatValue(logInfo_.str_filename));
 		//行号
-		str_temp.append(GetFormatValue(logInfo_.n_linenumber));
+		// str_temp.append(GetFormatValue(logInfo_.n_linenumber));
+		// 函数名称
+		// str_temp.append(GetFormatValue(logInfo_.str_funcname));
+		str_temp.append(GetFormatValue(logInfo_.str_filename, logInfo_.n_linenumber, logInfo_.str_funcname));
 
 		va_list ptr;
 		va_start(ptr, format);
@@ -116,7 +117,7 @@ void LogModule::LogPrintInf(const char* format,...) {
 		vsnprintf(c_value,sizeof(c_value),format,ptr);
 		va_end(ptr);
 
-		str_temp.append(GetFormatValue(c_value));
+		str_temp.append(c_value);
 
 		p_realization_->LogPrintInf(str_temp.c_str());
 	}
@@ -127,12 +128,12 @@ void LogModule::LogPrintNoLocationInf(const char* format,...) {
 	Lock();
 	if (p_realization_) {
 		std::string str_temp;
-		// manufacture
-		str_temp.append("[LOG]");
 		//时间   [week month day hours:minutes:seconds year]
 		str_temp.append(GetFormatValue(GetCurrentTime()));
     //时间戳 uint is seconds
 		str_temp.append(GetCurrentLocalTimeStamp());
+		// manufacture
+		str_temp.append("[LOG]");
 		//LogLevel
 		str_temp.append(GetLevelValue(logInfo_.loglevel));
 
@@ -142,7 +143,7 @@ void LogModule::LogPrintNoLocationInf(const char* format,...) {
 		vsnprintf(c_value,sizeof(c_value),format,ptr);
 		va_end(ptr);
 
-		str_temp.append(GetFormatValue(c_value));
+		str_temp.append(c_value);
 
 		p_realization_->LogPrintInf(str_temp.c_str());
 	}
@@ -156,9 +157,9 @@ void LogModule::LogPrintOriginData(const char* format,...) {
 
 		switch (logInfo_.loglevel) {
       case INFO_LEVEL: {
-				str_temp.append("[LOG]");
 				str_temp.append(GetFormatValue(GetCurrentTime()));
 				str_temp.append(GetCurrentLocalTimeStamp());
+				str_temp.append("[LOG]");
 				str_temp.append(GetLevelValue(logInfo_.loglevel));
 				break;
 			}
@@ -276,23 +277,38 @@ std::string LogModule::GetFormatValue(int n_value) {
 	return str_temp;
 }
 
+std::string  LogModule::GetFormatValue(std::string str_filename, int n_line, std::string str_funcname) {
+	std::string str_temp;
+	str_temp.append("[");
+	str_temp.append(str_filename);
+	str_temp.append(":");
+	char c_value[16];
+	sprintf(c_value,"%d",n_line);
+	str_temp.append(c_value);
+	str_temp.append(":");
+	str_temp.append(str_funcname);
+	str_temp.append("()");
+	str_temp.append("]");
+	return str_temp;
+}
+
 std::string  LogModule::GetLevelValue(int level){
 	std::string tmp;
 	switch (level) {
 	case DEBUG_LEVEL:
-		tmp = "DEBUG";
+		tmp = "D";      // DEBUG
 		break;
 	case WARNING_LEVEL:
-		tmp = "WARN";
+		tmp = "W";      // WARN
 		break;
 	case ERROR_LEVEL:
-		tmp = "ERROR";
+		tmp = "E";       // ERROR
 		break;
 	case INFO_LEVEL:
-		tmp = "INFO";
+		tmp = "I";      // INFO
 		break;
 	default:
-		tmp = "UnKnown";
+		tmp = "U";      // UnKnown
 		break;
 	}
 	std::string str_temp;

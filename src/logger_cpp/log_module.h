@@ -191,6 +191,8 @@ private:
 
   std::string  GetFormatValue(int n_value);
 
+  std::string  GetFormatValue(std::string str_filename, int n_line, std::string str_function);
+
   std::string  GetLevelValue(int level);
 
   static LogModule*  s_plog_module_;

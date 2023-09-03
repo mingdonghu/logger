@@ -157,14 +157,14 @@ ulog_err_t ulog_unsubscribe(ulog_function_t fn) {
 
 const char *ulog_level_name(ulog_level_t severity) {
   switch(severity) {
-    case ULOG_TRACE_LEVEL: return "TRACE";
-    case ULOG_DEBUG_LEVEL: return "DEBUG";
-    case ULOG_INFO_LEVEL: return "INFO";
-    case ULOG_WARNING_LEVEL: return "WARNING";
-    case ULOG_ERROR_LEVEL: return "ERROR";
-    case ULOG_CRITICAL_LEVEL: return "CRITICAL";
-    case ULOG_ALWAYS_LEVEL: return "ALWAYS";
-    default: return "UNKNOWN";
+    case ULOG_TRACE_LEVEL:      return "T";     // TRACE
+    case ULOG_DEBUG_LEVEL:      return "D";     // DEBUG
+    case ULOG_INFO_LEVEL:       return "I";     // INFO
+    case ULOG_WARNING_LEVEL:    return "W";     // WARNING
+    case ULOG_ERROR_LEVEL:      return "E";     // ERROR
+    case ULOG_CRITICAL_LEVEL:   return "C";     // CRITICAL
+    case ULOG_ALWAYS_LEVEL:     return "A";     // ALWAYS
+    default:                    return "U";     // UNKNOWN
   }
 }
 
@@ -173,7 +173,8 @@ void ulog_message(ulog_level_t severity, __in const char* filename, __in int lin
   memset(s_message, 0, sizeof(s_message));
 
   int len = 0;
-  len += snprintf(s_message, 100, "[%s:%d: %s()]", filename, lineno, funcname);
+  // len += snprintf(s_message, 100, "[%s:%d: %s()]", filename, lineno, funcname);
+  len += snprintf(s_message, 100, "[%s:%d]", filename, lineno);
   va_list ap;
   va_start(ap, fmt);
   vsnprintf(s_message + len, ULOG_MAX_MESSAGE_LENGTH - len, fmt, ap);
